@@ -12,7 +12,7 @@ void setup() {
 void loop() {
   input = analogRead(Pin35);
   float s = input*3.3/4096;
-  Serial.println(input);
+  Serial.println(s);
   // put your main code here, to run repeatedly:
 
 }
