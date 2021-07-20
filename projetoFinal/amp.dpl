@@ -1,0 +1,38 @@
+<Qucs Schematic 0.0.19>
+<Properties>
+  <View=0,30,1931,1598,0.842499,0,420>
+  <Grid=10,10,0>
+  <DataSet=amp.dat>
+  <DataDisplay=amp.sch>
+  <OpenDisplay=1>
+  <Script=amp.m>
+  <RunScript=0>
+  <showFrame=0>
+  <FrameText0=Título>
+  <FrameText1=Desenhado por:>
+  <FrameText2=Data:>
+  <FrameText3=Revisão:>
+</Properties>
+<Symbol>
+</Symbol>
+<Components>
+</Components>
+<Wires>
+</Wires>
+<Diagrams>
+  <Rect 220 719 1073 669 3 #c0c0c0 1 00 1 0 0.0005 0.01 1 -3.49687e-09 5e-09 3.80169e-08 1 -1 0.2 1 315 0 225 "" "" "">
+	<"Vload.Vt" #ff0000 0 3 0 0 0>
+  </Rect>
+  <Rect 350 1343 768 423 3 #c0c0c0 1 00 1 0 0.001 0.01 1 -2e-11 2e-11 1.7376e-10 1 -1 0.2 1 315 0 225 "" "" "">
+	<"Pr1.It" #0000ff 0 3 0 0 0>
+	<"Pr2.It" #ff0000 0 3 0 0 0>
+  </Rect>
+  <Tab 1200 1095 571 275 3 #c0c0c0 1 00 1 0 1 1 1 0 1 1 1 0 1 11 315 0 225 "" "" "">
+	<"VB.Vt - VE.Vt" #0000ff 0 3 0 0 0>
+	<"VB.Vt" #0000ff 0 3 1 0 0>
+	<"VE.Vt" #0000ff 0 3 1 0 0>
+	<"Pr2.Vt" #0000ff 0 3 1 0 0>
+  </Tab>
+</Diagrams>
+<Paintings>
+</Paintings>
