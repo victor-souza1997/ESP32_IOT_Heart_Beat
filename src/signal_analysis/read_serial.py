@@ -3,7 +3,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N = 1000;
+
+
+
+def shift5(arr, num, fill_value=np.nan):
+    result = np.empty_like(arr)
+    if num > 0:
+        result[:num] = fill_value
+        result[num:] = arr[:-num]
+    elif num < 0:
+        result[num:] = fill_value
+        result[:num] = arr[-num:]
+    else:
+        result[:] = arr
+    return result
+
+N = 400;
 
 s = serial.Serial('COM3', baudrate = 115200, timeout = 1) #criando porta serial
 
@@ -26,18 +41,25 @@ aux = 0; #variavel auxiliar que incrementa
 while(1):# repetir sempre	
 	res = s.read()#coletar byte da porta serial
 	res = str(res, encoding)#converter byte em string
-	if(res == '\r'):#caso a ultima string recebida seja essa
-		if(aux == N): #
-			aux1.clear()
-			aux1.plot(array_msg)
-			fig.canvas.draw()
-			aux = 0;
+	print(res)
+	
+	"""if(res == '\r'):#caso a ultima string recebida seja essa
+		#if(aux == N): #
+		#	aux1.clear()
+		#	aux1.plot(array_msg)
+		#	fig.canvas.draw()
+		#	aux = 0;
     			
 		temp = float(msg[::-1])
-		array_msg[aux] = temp
-		aux = aux + 1#incrementar variavel auxiliar 
-		#print(array_msg)
+		array_msg = shift5(array_msg, -1)
+		array_msg[-1] = temp
+		aux1.clear()
+		aux1.plot(array_msg)
+		fig.canvas.draw()
+
+		#aux = aux + 1#incrementar variavel auxiliar 
+		print(temp)
 		msg = ""
 	msg = res + msg#adiciona caractere recebido a string mensagem
 			
-
+"""

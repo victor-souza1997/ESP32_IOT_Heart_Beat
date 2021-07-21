@@ -5,7 +5,7 @@
 
 
 #define samplePin 35
-#define amos_per_sec 1000 //quantidade de amostras coletadas por segundo
+#define amos_per_sec 100 //quantidade de amostras coletadas por segundo
 
 
 //****************** WiFi ******************************
@@ -136,7 +136,7 @@ void conectaMQTT()
     //Serial.println(BROKER_MQTT);
     if (MQTT.connect(ID_MQTT)) {
         //Serial.println("Conectado ao Broker com sucesso!");
-        MQTT.subscribe(TOPIC_SUBSCRIBE);
+        //MQTT.subscribe(TOPIC_SUBSCRIBE);
     } 
     else 
     {
