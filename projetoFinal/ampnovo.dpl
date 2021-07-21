@@ -1,0 +1,31 @@
+<Qucs Schematic 0.0.19>
+<Properties>
+  <View=0,12,1157,954,1,0,10>
+  <Grid=10,10,0>
+  <DataSet=ampnovo.dat>
+  <DataDisplay=ampnovo.sch>
+  <OpenDisplay=1>
+  <Script=ampnovo.m>
+  <RunScript=0>
+  <showFrame=0>
+  <FrameText0=Título>
+  <FrameText1=Desenhado por:>
+  <FrameText2=Data:>
+  <FrameText3=Revisão:>
+</Properties>
+<Symbol>
+</Symbol>
+<Components>
+</Components>
+<Wires>
+</Wires>
+<Diagrams>
+  <Rect 310 619 800 569 3 #c0c0c0 1 00 1 0 0.001 0.01 1 -0.00161835 0.0005 0.00159781 1 -1 0.2 1 315 0 225 "" "" "">
+	<"Vload.Vt" #ff0000 0 3 0 0 0>
+  </Rect>
+  <Rect 70 850 240 160 3 #c0c0c0 1 00 1 0 0.2 1 1 -0.1 0.5 1.1 1 -0.1 0.5 1.1 315 0 225 "" "" "">
+	<"VE.Vt" #0000ff 0 3 0 0 0>
+  </Rect>
+</Diagrams>
+<Paintings>
+</Paintings>
