@@ -67,7 +67,7 @@ void setup() { //funcao de configuracao
   
   conectaWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);   
-  MQTT.setCallback(recebePacote);
+  
   
   //inicializando timer para interrupt
   timer = timerBegin(0, 80, true);
@@ -89,11 +89,13 @@ void loop() {//funcao loop
     
    input = analogRead(samplePin);
    float s = input*3.3/4096;
+   char tempstring[6];
+   dtostrf(s,3,1,tempstring);
    Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
+   MQTT.publish(TOPIC_PUBLISH, tempstring) ;
     //Serial.println(totalInterruptCounter);
   }
-  
-  
+
 }
 
 void mantemConexoes() {
@@ -130,16 +132,16 @@ void conectaMQTT()
 { 
   while (!MQTT.connected()) 
   {
-    Serial.print("Conectando ao Broker MQTT: ");
-    Serial.println(BROKER_MQTT);
+    //Serial.print("Conectando ao Broker MQTT: ");
+    //Serial.println(BROKER_MQTT);
     if (MQTT.connect(ID_MQTT)) {
-        Serial.println("Conectado ao Broker com sucesso!");
+        //Serial.println("Conectado ao Broker com sucesso!");
         MQTT.subscribe(TOPIC_SUBSCRIBE);
     } 
     else 
     {
-      Serial.println("Nao foi possivel se conectar ao broker.");
-      Serial.println("Nova tentatica de conexao em 10s");
+      //Serial.println("Nao foi possivel se conectar ao broker.");
+      //Serial.println("Nova tentatica de conexao em 10s");
       delay(10000);
     }
   }
