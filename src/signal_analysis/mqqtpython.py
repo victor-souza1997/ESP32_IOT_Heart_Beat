@@ -32,8 +32,8 @@ def callback(client, userdata, message):
     global array_msg, fig, aux1
     #print(str(message.payload.decode("utf-8")))	
     temp = float(str(message.payload.decode("utf-8")))
-    #print(temp)
-    print(array_msg)
+    print(temp)
+    #print(array_msg)
     np.savetxt("data.csv", array_msg, delimiter=",")
     array_msg = shift5(array_msg, -1)
     array_msg[-1] = temp

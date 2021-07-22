@@ -2,10 +2,17 @@
 #include <WiFi.h> /* Header para uso das funcionalidades de wi-fi do ESP32 */
 #include <PubSubClient.h>
 #include <stdlib.h>
+#include <arduinoFFT.h>
 
 
 #define samplePin 35
-#define amos_per_sec 100 //quantidade de amostras coletadas por segundo
+#define amos_per_sec 512 //quantidade de amostras coletadas por segundo
+// configurando FFT
+
+arduinoFFT FFT = arduinoFFT();      
+#define SAMPLES 1024              //Must be a power of 2
+#define SAMPLING_FREQUENCY amos_per_sec   //Hz. Determines maximum frequency that can be analysed by the FFT.
+                           
 
 
 //****************** WiFi ******************************
@@ -41,7 +48,10 @@ PubSubClient MQTT(wifiClient);        // Instancia o Cliente MQTT passando o obj
 int input;//variavel que armazenara a entrada de audio
 volatile int interruptCounter;
 int totalInterruptCounter;
- 
+int j = 0;
+double vRealADC[SAMPLES];
+double vReal[SAMPLES];
+double vImag[SAMPLES];
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
@@ -68,7 +78,6 @@ void setup() { //funcao de configuracao
   conectaWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);   
   
-  
   //inicializando timer para interrupt
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
@@ -80,19 +89,45 @@ void loop() {//funcao loop
    mantemConexoes();
    //enviaValores();
    MQTT.loop();
-  
+
+   if(j == SAMPLES ){
+    FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+    FFT.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
+    FFT.ComplexToMagnitude(vReal, vImag, SAMPLES);
+
+    Serial.println("+++ Freq / Amplitude +++++");
+    float temp = 0;
+    int pos;
+    for(int i=4; i<(SAMPLES/2); i++)  {
+      //Serial.print((i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES, 1);
+      //Serial.print("\t");
+      //Serial.println(vReal[i]);    
+      if(vReal[i]>temp) {temp = vReal[i]; pos = (i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES;}
+    }
+    Serial.println(pos);
+    j = 0;
+    char tempstring[6];
+    dtostrf(pos,1,1,tempstring);
+    //Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
+    MQTT.publish(TOPIC_PUBLISH, tempstring);
+  }
+    
    if (interruptCounter > 0){//caso o contador de interrupt seja maior que 0
     portENTER_CRITICAL(&timerMux);
     interruptCounter--;
     portEXIT_CRITICAL(&timerMux);
     totalInterruptCounter++;
     
-   input = analogRead(samplePin);
-   float s = input*3.3/4096;
-   char tempstring[6];
-   dtostrf(s,3,1,tempstring);
-   Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
-   MQTT.publish(TOPIC_PUBLISH, tempstring) ;
+    input = analogRead(samplePin);
+    float s = input*3.3/4096;
+    //char tempstring[6];
+    //dtostrf(s,3,1,tempstring);
+    //Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
+    //MQTT.publish(TOPIC_PUBLISH, tempstring) ;
+    vRealADC[j] = s;
+    vReal[j] = s;
+    vImag[j] = 0;
+    j++;
     //Serial.println(totalInterruptCounter);
   }
 
