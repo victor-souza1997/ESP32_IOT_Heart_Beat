@@ -15,17 +15,18 @@ def save(user, dado):#adicionando dados a um arquivo csv
     dado = pd.DataFrame(dado)
     dado.to_csv (r'../../contents/'+user+'.csv', mode='a',  index = False, header= False, encoding='utf-8')
         
-
 def gaussian(u, sigma, f):#funcao gaussiana no ponto
     return 1/(sigma*np.sqrt(2*np.pi))*np.exp(-1/2*pow((f-u)/sigma, 2))
 
 def classificar(f):#funcao para classificar resultado
     df = pd.read_csv("../../contents/classificacao.csv")
     df = df.values
-    if(gaussian(df[0,0], df[0,1], f) > gaussian(df[1,0], df[1,1], f)):
-        print("paciente bem")
+    if(f == 0):
+        print("aparelho desconectado")
+    elif(gaussian(df[0,0], df[0,1], f) > gaussian(df[1,0], df[1,1], f)):
+        print("freq normal")
     else:
-        print("paciente mal")
+        print("freq do batimento cardiaco em situacao de risco")
         client_get.publish("amostrar/ans","L")
 
 def shift5(arr, num, fill_value=np.nan):#

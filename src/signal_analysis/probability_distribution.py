@@ -5,7 +5,7 @@ import pandas as pd
 #initialize a normal distribution with frozen in mean=-1, std. dev.= 1
 
 mean_well = 60; sigma_well = 10;
-mean_ill = 120; sigma_ill = 20;
+mean_ill = 120; sigma_ill = 50;
 
 rv = norm(loc = mean_well, scale = sigma_well)
 rv1 = norm(loc = mean_ill, scale = sigma_ill)

@@ -9,7 +9,7 @@
 #define samplePin 35//pino de amostragem do sinal
 #define ansPIN 13//pino que acende quando paciente estiver ruim
 #define amos_per_sec 512 //quantidade de amostras coletadas por segundo
-#define user "p2"
+#define user "p1"
 // configurando FFT
 arduinoFFT FFT = arduinoFFT();      
                          
@@ -89,11 +89,12 @@ void loop()
   
     float temp = 0;//variavel auxiliar para encontrar maior componente de frequencia
     int pos; //armazenar posicao da frequencia fundamental
-    for(int i=4; i<(SAMPLES/2); i++)//encontrar maior componente harmonica  
+    for(int i=0; i<(SAMPLES/2); i++)//encontrar maior componente harmonica  
     {
       //Serial.print((i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES, 1);//Serial.print("\t");//Serial.println(vReal[i]);    
       if(vReal[i]>temp) {temp = vReal[i]; pos = (i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES;}
     }
+    Serial.println(temp);
     Serial.println(pos);
     j = 0;
     char tempstring[5];
@@ -109,7 +110,7 @@ void loop()
     portEXIT_CRITICAL(&timerMux);
     //totalInterruptCounter++;//contando numero de interrupcoes 
     input = analogRead(samplePin);//amostrando valor da porta smamplePin
-    float s = input*3.3/4096;//convertendo valor binario num valor array
+    float s = input*3.3/4096 - 1.57;//convertendo valor binario num valor array e removendo nivel Dc
     vRealADC[j] = s;//""""
     vReal[j] = s;//vetor que armazena valores reais para o calculo da DFT
     vImag[j] = 0;//vetor que armazena valores complexos
