@@ -118,31 +118,23 @@ void loop()
   }
 
 }
-
-void mantemConexoes() {
-    if (!MQTT.connected()) {
-       conectaMQTT(); 
-    }
-    
+void mantemConexoes() 
+{
+    if (!MQTT.connected()){conectaMQTT();}   
     conectaWiFi(); //se não há conexão com o WiFI, a conexão é refeita
 }
-
-void conectaWiFi() {
-
-  if (WiFi.status() == WL_CONNECTED) {
-     return;
-  }
-        
+void conectaWiFi() 
+{
+  if (WiFi.status() == WL_CONNECTED) return;
   Serial.print("Conectando-se na rede: ");
   Serial.print(SSID);
-  Serial.println("  Aguarde!");
-
+  Serial.println("Aguarde!");
   WiFi.begin(SSID, PASSWORD); // Conecta na rede WI-FI  
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(100);
-      Serial.print(".");
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(100);
+    Serial.print(".");
   }
-  
   Serial.println();
   Serial.print("Conectado com sucesso, na rede: ");
   Serial.print(SSID);  
@@ -155,9 +147,10 @@ void conectaMQTT()
   {
     //Serial.print("Conectando ao Broker MQTT: ");
     //Serial.println(BROKER_MQTT);
-    if (MQTT.connect(ID_MQTT)) {
-        //Serial.println("Conectado ao Broker com sucesso!");
-        //MQTT.subscribe(TOPIC_SUBSCRIBE);
+    if (MQTT.connect(ID_MQTT)) 
+    {
+      //Serial.println("Conectado ao Broker com sucesso!");
+      //MQTT.subscribe(TOPIC_SUBSCRIBE);
     } 
     else 
     {
@@ -167,7 +160,8 @@ void conectaMQTT()
     }
   }
 }
-void IRAM_ATTR onTimer() { //funcao de interrupt
+void IRAM_ATTR onTimer()//funcao de interrupt  
+{
   portENTER_CRITICAL_ISR(&timerMux);
   interruptCounter++;
   portEXIT_CRITICAL_ISR(&timerMux);
