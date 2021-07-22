@@ -43,8 +43,7 @@ int BROKER_PORT = 1883;
 PubSubClient MQTT(wifiClient);        // Instancia o Cliente MQTT passando o objeto espClient
 //**********************************************************
 
-
-
+//inicializando variaveis
 int input;//variavel que armazenara a entrada de audio
 volatile int interruptCounter;
 int totalInterruptCounter;
@@ -54,54 +53,47 @@ double vReal[SAMPLES];
 double vImag[SAMPLES];
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
- 
-void IRAM_ATTR onTimer() { //funcao de interrupt
-  portENTER_CRITICAL_ISR(&timerMux);
-  interruptCounter++;
-  portEXIT_CRITICAL_ISR(&timerMux);
- 
-}
+
+
 
 //Declaração das Funções
 void mantemConexoes();  //Garante que as conexoes com WiFi e MQTT Broker se mantenham ativas
 void conectaWiFi();     //Faz conexão com WiFi
 void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaValores();     //
+void IRAM_ATTR onTimer(); //construtor da funcao interrupt 
+
 //void recebePacote(char* topic, byte* payload, unsigned int length);
-
-
 
 void setup() { //funcao de configuracao
   pinMode(samplePin, input);//configurando pino de amotragem para o pino samplePin
   Serial.begin(115200);//iniciando comunicao serial
-  
-  conectaWiFi();
-  MQTT.setServer(BROKER_MQTT, BROKER_PORT);   
+  conectaWiFi();//conectando ao WIFI
+  MQTT.setServer(BROKER_MQTT, BROKER_PORT);//inicializando server MQQT   
   
   //inicializando timer para interrupt
-  timer = timerBegin(0, 80, true);
+  timer = timerBegin(0, 80, true); //inicializar timer
   timerAttachInterrupt(timer, &onTimer, true);
   timerAlarmWrite(timer, 1000000/amos_per_sec, true);
   timerAlarmEnable(timer);
 }
 
-void loop() {//funcao loop
-   mantemConexoes();
+void loop() 
+{   
    //enviaValores();
+   mantemConexoes();
    MQTT.loop();
-
-   if(j == SAMPLES ){
+   if(j == SAMPLES ){//ultima amostragem 
+    //etapa para calcular a DFT
     FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
     FFT.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
     FFT.ComplexToMagnitude(vReal, vImag, SAMPLES);
-
-    Serial.println("+++ Freq / Amplitude +++++");
-    float temp = 0;
-    int pos;
-    for(int i=4; i<(SAMPLES/2); i++)  {
-      //Serial.print((i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES, 1);
-      //Serial.print("\t");
-      //Serial.println(vReal[i]);    
+  
+    float temp = 0;//variavel auxiliar para encontrar maior componente de frequencia
+    int pos; //armazenar posicao da frequencia fundamental
+    for(int i=4; i<(SAMPLES/2); i++)//encontrar maior componente harmonica  
+    {
+      //Serial.print((i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES, 1);//Serial.print("\t");//Serial.println(vReal[i]);    
       if(vReal[i]>temp) {temp = vReal[i]; pos = (i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES;}
     }
     Serial.println(pos);
@@ -111,24 +103,18 @@ void loop() {//funcao loop
     //Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
     MQTT.publish(TOPIC_PUBLISH, tempstring);
   }
-    
-   if (interruptCounter > 0){//caso o contador de interrupt seja maior que 0
+  if (interruptCounter > 0)//caso o contador de interrupt seja maior que 0
+  { 
     portENTER_CRITICAL(&timerMux);
     interruptCounter--;
     portEXIT_CRITICAL(&timerMux);
-    totalInterruptCounter++;
-    
-    input = analogRead(samplePin);
-    float s = input*3.3/4096;
-    //char tempstring[6];
-    //dtostrf(s,3,1,tempstring);
-    //Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
-    //MQTT.publish(TOPIC_PUBLISH, tempstring) ;
-    vRealADC[j] = s;
-    vReal[j] = s;
-    vImag[j] = 0;
-    j++;
-    //Serial.println(totalInterruptCounter);
+    //totalInterruptCounter++;//contando numero de interrupcoes 
+    input = analogRead(samplePin);//amostrando valor da porta smamplePin
+    float s = input*3.3/4096;//convertendo valor binario num valor array
+    vRealADC[j] = s;//""""
+    vReal[j] = s;//vetor que armazena valores reais para o calculo da DFT
+    vImag[j] = 0;//vetor que armazena valores complexos
+    j++;//incrementando posicao do vetor de amostragem
   }
 
 }
@@ -180,4 +166,9 @@ void conectaMQTT()
       delay(10000);
     }
   }
+}
+void IRAM_ATTR onTimer() { //funcao de interrupt
+  portENTER_CRITICAL_ISR(&timerMux);
+  interruptCounter++;
+  portEXIT_CRITICAL_ISR(&timerMux);
 }
