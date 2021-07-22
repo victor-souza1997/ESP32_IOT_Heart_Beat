@@ -21,6 +21,7 @@ def classificar(f):
         print("paciente bem")
     else:
         print("paciente mal")
+        client_get.publish("amostrar/ans","L")
 
 def shift5(arr, num, fill_value=np.nan):
     result = np.empty_like(arr)
