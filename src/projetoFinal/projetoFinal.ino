@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <arduinoFFT.h>
 
-#define SAMPLES 1024  // Numero de amostras (Must be a power of 2)
+#define SAMPLES 1024              //Must be a power of 2
 #define SAMPLING_FREQUENCY amos_per_sec   //Hz. Determines maximum frequency that can be analysed by the FFT.
-#define samplePin 35 //pino de amostragem
+#define samplePin 35//pino de amostragem do sinal
+#define ansPIN 13//pino que acende quando paciente estiver ruim
 #define amos_per_sec 512 //quantidade de amostras coletadas por segundo
-
+#define user "p2"
 // configurando FFT
 arduinoFFT FFT = arduinoFFT();      
                          
@@ -51,21 +52,23 @@ double vImag[SAMPLES];
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
+
+
 //Declaração das Funções
 void mantemConexoes();  //Garante que as conexoes com WiFi e MQTT Broker se mantenham ativas
 void conectaWiFi();     //Faz conexão com WiFi
 void conectaMQTT();     //Faz conexão com Broker MQTT
 void enviaValores();     //
 void IRAM_ATTR onTimer(); //construtor da funcao interrupt 
-
-//void recebePacote(char* topic, byte* payload, unsigned int length);
+void recebePacote(char* topic, byte* payload, unsigned int length);//construtor da funcao que recebe pacote
 
 void setup() { //funcao de configuracao
   pinMode(samplePin, input);//configurando pino de amotragem para o pino samplePin
+  pinMode(ansPIN, OUTPUT);
   Serial.begin(115200);//iniciando comunicao serial
   conectaWiFi();//conectando ao WIFI
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);//inicializando server MQQT   
-  
+  MQTT.setCallback(recebePacote);
   //inicializando timer para interrupt
   timer = timerBegin(0, 80, true); //inicializar timer
   timerAttachInterrupt(timer, &onTimer, true);
@@ -93,9 +96,10 @@ void loop()
     }
     Serial.println(pos);
     j = 0;
-    char tempstring[6];
+    char tempstring[5];
     dtostrf(pos,1,1,tempstring);
-    //Serial.println(s);//Serial.print("An interrupt as occurred. Total number: ");
+    Serial.println(tempstring);//Serial.print("An interrupt as occurred. Total number: ");
+    MQTT.publish(TOPIC_PUBLISH, user);  
     MQTT.publish(TOPIC_PUBLISH, tempstring);
   }
   if (interruptCounter > 0)//caso o contador de interrupt seja maior que 0
@@ -145,7 +149,7 @@ void conectaMQTT()
     if (MQTT.connect(ID_MQTT)) 
     {
       //Serial.println("Conectado ao Broker com sucesso!");
-      //MQTT.subscribe(TOPIC_SUBSCRIBE);
+      MQTT.subscribe(TOPIC_SUBSCRIBE);
     } 
     else 
     {
@@ -160,4 +164,17 @@ void IRAM_ATTR onTimer()//funcao de interrupt
   portENTER_CRITICAL_ISR(&timerMux);
   interruptCounter++;
   portEXIT_CRITICAL_ISR(&timerMux);
+}
+void recebePacote(char* topic, byte* payload, unsigned int length) //funcao responsavel por alterar valor do setTemp
+{
+  String msg;
+  //obtem a string do payload recebido
+  for(int i = 0; i < length; i++) 
+  {
+     char c = (char)payload[i];
+     msg += c;
+  }
+  /*receber mensagem do estado do LED*/
+  if(msg = 'L') digitalWrite(ansPIN, HIGH);
+  Serial.println(msg);  
 }
