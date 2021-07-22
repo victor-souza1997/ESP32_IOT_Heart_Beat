@@ -4,17 +4,14 @@
 #include <stdlib.h>
 #include <arduinoFFT.h>
 
-
-#define samplePin 35
-#define amos_per_sec 512 //quantidade de amostras coletadas por segundo
-// configurando FFT
-
-arduinoFFT FFT = arduinoFFT();      
 #define SAMPLES 1024              //Must be a power of 2
 #define SAMPLING_FREQUENCY amos_per_sec   //Hz. Determines maximum frequency that can be analysed by the FFT.
-                           
+#define samplePin 35
+#define amos_per_sec 512 //quantidade de amostras coletadas por segundo
 
-
+// configurando FFT
+arduinoFFT FFT = arduinoFFT();      
+                         
 //****************** WiFi ******************************
 /* SSID / nome da rede WI-FI que deseja se conectar */
 const char* SSID = "AP_405"; 
