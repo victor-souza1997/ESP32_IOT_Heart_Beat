@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <arduinoFFT.h>
 
-#define SAMPLES 1024              //Must be a power of 2
+#define SAMPLES 1024  // Numero de amostras (Must be a power of 2)
 #define SAMPLING_FREQUENCY amos_per_sec   //Hz. Determines maximum frequency that can be analysed by the FFT.
-#define samplePin 35
+#define samplePin 35 //pino de amostragem
 #define amos_per_sec 512 //quantidade de amostras coletadas por segundo
 
 // configurando FFT
@@ -50,8 +50,6 @@ double vReal[SAMPLES];
 double vImag[SAMPLES];
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
-
-
 
 //Declaração das Funções
 void mantemConexoes();  //Garante que as conexoes com WiFi e MQTT Broker se mantenham ativas
