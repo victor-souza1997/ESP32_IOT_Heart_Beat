@@ -13,7 +13,7 @@ array_msg = np.array([0] * N, dtype=float);#string que salvara
 def save(user, dado):#adicionando dados a um arquivo csv
     dado = np.array([dado])
     dado = pd.DataFrame(dado)
-    dado.to_csv (r'../../contents/'+user+'.csv', mode='a',  index = False, header= False, encoding='utf-8')
+    dado.to_csv (r'../../contents/users/'+user+'.csv', mode='a',  index = False, header= False, encoding='utf-8')
         
 def gaussian(u, sigma, f):#funcao gaussiana no ponto
     return 1/(sigma*np.sqrt(2*np.pi))*np.exp(-1/2*pow((f-u)/sigma, 2))
@@ -27,7 +27,7 @@ def classificar(f):#funcao para classificar resultado
         print("freq normal")
     else:
         print("freq do batimento cardiaco em situacao de risco")
-        client_get.publish("amostrar/ans","L")
+        client_get.publish("amostrar/ans/"+user,"L")
 
 def shift5(arr, num, fill_value=np.nan):#
     result = np.empty_like(arr)

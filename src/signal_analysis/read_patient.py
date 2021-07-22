@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import pandas as pd
 
-p1 = pd.read_csv("../../contents/p1.csv")
-p2 = pd.read_csv("../../contents/p2.csv")
+p1 = pd.read_csv("../../contents/users/p1.csv")
+p2 = pd.read_csv("../../contents/users/p2.csv")
 
 plt.plot(p1)
 plt.plot(p2)

@@ -30,14 +30,14 @@ int BROKER_PORT = 1883;
 
 /* Tópico MQTT para envio de informações do ESP32 para broker MQTT */
 #define TOPIC_PUBLISH   "amostrar/heart_beat"  
-#define TOPIC_SUBSCRIBE "amostrar/ans"
+#define TOPIC_SUBSCRIBE "amostrar/ans/p2"
 /* id mqtt (para identificação de sessão) */
 /* IMPORTANTE: este deve ser único no broker (ou seja, 
                se um client MQTT tentar entrar com o mesmo 
                id de outro já conectado ao broker, o broker 
                irá fechar a conexão de um deles).
 */
-#define ID_MQTT  "SENDER"            //Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
+#define ID_MQTT  "SENDER1"            //Informe um ID unico e seu. Caso sejam usados IDs repetidos a ultima conexão irá sobrepor a anterior. 
 PubSubClient MQTT(wifiClient);        // Instancia o Cliente MQTT passando o objeto espClient
 //**********************************************************
 
@@ -94,14 +94,14 @@ void loop()
       //Serial.print((i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES, 1);//Serial.print("\t");//Serial.println(vReal[i]);    
       if(vReal[i]>temp) {temp = vReal[i]; pos = (i * 1.0 * SAMPLING_FREQUENCY) / SAMPLES;}
     }
-    Serial.println(temp);
-    Serial.println(pos);
+    //Serial.println(temp);
+    //Serial.println(pos);
     j = 0;
-    char tempstring[5];
+    char tempstring[10];
     dtostrf(pos,1,1,tempstring);
-    Serial.println(tempstring);//Serial.print("An interrupt as occurred. Total number: ");
-    MQTT.publish(TOPIC_PUBLISH, user);  
-    MQTT.publish(TOPIC_PUBLISH, tempstring);
+    //Serial.println(tempstring);//Serial.print("An interrupt as occurred. Total number: ");
+    MQTT.publish(TOPIC_PUBLISH, user); //mandar usuario o qual o dado medido pertence
+    MQTT.publish(TOPIC_PUBLISH, tempstring);//mandar dado medido para servidor central
   }
   if (interruptCounter > 0)//caso o contador de interrupt seja maior que 0
   { 
@@ -115,6 +115,7 @@ void loop()
     vReal[j] = s;//vetor que armazena valores reais para o calculo da DFT
     vImag[j] = 0;//vetor que armazena valores complexos
     j++;//incrementando posicao do vetor de amostragem
+    Serial.println(s);
   }
 
 }
