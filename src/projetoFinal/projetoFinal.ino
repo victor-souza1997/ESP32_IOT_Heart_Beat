@@ -43,12 +43,15 @@ PubSubClient MQTT(wifiClient);        // Instancia o Cliente MQTT passando o obj
 
 //inicializando variaveis
 int input;//variavel que armazenara a entrada de audio
-volatile int interruptCounter;
-int totalInterruptCounter;
+// variaveis responsaveis pela FFT
 int j = 0;
-double vRealADC[SAMPLES];
-double vReal[SAMPLES];
-double vImag[SAMPLES];
+double vRealADC[SAMPLES];//armazena valor amostrado
+double vReal[SAMPLES];//armazena valor amostrado e posteriormente a resposta da DFT
+double vImag[SAMPLES];//armazena valor complexo da fft
+
+//variaveis do contador de interrupcao
+volatile int interruptCounter;//variavel onde é contado 
+int totalInterruptCounter;//variavel que armazena o numero de interrupcoes
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -62,7 +65,8 @@ void enviaValores();     //
 void IRAM_ATTR onTimer(); //construtor da funcao interrupt 
 void recebePacote(char* topic, byte* payload, unsigned int length);//construtor da funcao que recebe pacote
 
-void setup() { //funcao de configuracao
+void setup() 
+{ //funcao de configuracao
   pinMode(samplePin, input);//configurando pino de amotragem para o pino samplePin
   pinMode(ansPIN, OUTPUT);
   Serial.begin(115200);//iniciando comunicao serial
